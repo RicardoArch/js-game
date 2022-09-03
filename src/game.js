@@ -7,6 +7,8 @@ const btnDown = document.querySelector('#down');
 
 let canvasSize;
 let elementsSize;
+let level = 0;
+let lives = 3;
 
 const playerPosition = {
     x: undefined,
@@ -45,7 +47,13 @@ function startGame(){
     game.font = elementsSize + 'px Verdana';
     game.textAlign = 'end';
 
-    const map = maps[2];
+    const map = maps[level];
+
+    if (!map){
+        gameWin();
+        return;
+    }
+
     const mapRows = map.trim().split('\n');
     const mapRowCols = mapRows.map(row => row.trim().split(''));
     console.log({map, mapRows});
@@ -90,6 +98,7 @@ function movePlayer(){
 
     if (giftCollision){
         console.log('Subiste de nivel compa');
+        levelWin();
     }
 
     const enemyCollision = enemyPositions.find(enemy => {
@@ -100,10 +109,34 @@ function movePlayer(){
     });
 
     if (enemyCollision){
-        console.log('Chocaste contra un enemigo compa');
+        levelFail();
     }
 
     game.fillText(emojis['PLAYER'], playerPosition.x, playerPosition.y);
+}
+
+function levelWin(){
+    console.log('Subiste de nivel');
+    level++;
+    startGame();
+}
+
+function levelFail(){
+
+    console.log('chocaste con el enemigo');
+    lives--;
+    console.log(lives)
+    if (lives <= 0){
+        level = 0;
+        lives = 3;
+    } 
+    playerPosition.x = undefined;
+    playerPosition.y = undefined;
+    startGame();
+}
+
+function gameWin(){
+    console.log('Terminaste el juego');
 }
 
 window.addEventListener('keydown', moveByKeys);
